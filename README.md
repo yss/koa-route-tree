@@ -19,7 +19,6 @@ Let's see it.
 
     ```js
     const alias = {
-        '/root': '/', // Attention: this is equivalent to /root <=> /index
         '/d': '/index/download', // a short download link
         'a/b': 'your/path' // the same link, this is equivalent to /a/b <=> /your/path
     };

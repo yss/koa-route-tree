@@ -34,7 +34,7 @@ function addAlias(alias, controller) {
 
     Object.keys(alias).forEach(function(key) {
         let fn = controller;
-        alias[key].split(/[\/]/).forEach(function(method) {
+        alias[key].split('/').forEach(function(method) {
             if (method) {
                 fn = fn[method];
             }
@@ -44,12 +44,14 @@ function addAlias(alias, controller) {
         }
 
         let aliasController = controller,
-            keyArr = key.split(/[\.\/]/);
+            keyArr = key.split('/');
 
         key = keyArr.pop();
 
         keyArr.forEach(function(method) {
-            aliasController = aliasController[method] = aliasController[method] || {};
+            if (method) {
+                aliasController = aliasController[method] = aliasController[method] || {};
+            }
         });
 
         if (aliasController.hasOwnProperty(key)) {
