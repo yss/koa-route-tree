@@ -8,8 +8,6 @@ Let's see it.
 
 `npm install koa-route-tree --save`
 
-## Features
-
 ## Class
 
 `Route(controllerDirectory[, alias][, withoutRouteHandle])`
@@ -18,6 +16,7 @@ Let's see it.
 
 * `controllerDirectory` is a string of controller directory.
 * `alias` is a object for alias to a path or function.
+
     ```js
     const alias = {
         '/root': '/', // Attention: this is equivalent to /root <=> /index
@@ -26,7 +25,9 @@ Let's see it.
     };
     ```
 * `withoutRouteHandle(controller)` is a handle function for the request without route handle.
+
     It will not execute `yield* next`, if `return true` from this function.
+    
     And the context of the function is the current koa context.
 
 ### Static Attribute
@@ -36,6 +37,7 @@ Let's see it.
 ## Controller
 
 * `index` is default path.
+
     ```js
     // File: app.js
     
@@ -52,6 +54,7 @@ Let's see it.
     };
     ```
 * `next` will be set to the last parameters of function.
+
     ```js
     // File: index.js
     exports.index = function *(id, next) {
@@ -59,6 +62,7 @@ Let's see it.
     };
     ```
 * Http method is a prefix of function name but `GET`.
+
     ```js
     // File: index.js
     
@@ -144,6 +148,7 @@ exports.putSet = function *(page, second) {
 mocha
 # or
 npm test # npm run test
+```
 
 ## The End
 

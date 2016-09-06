@@ -1,6 +1,6 @@
 {
   "name": "koa-route-tree",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "the route for koa",
   "main": "index.js",
   "scripts": {
@@ -12,8 +12,10 @@
   },
   "keywords": [
     "route",
+    "routes",
     "router",
-    "koa"
+    "koa",
+    "middleware"
   ],
   "devDependencies": {
     "co": "^4.6.0",
