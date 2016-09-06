@@ -1,0 +1,30 @@
+{
+  "name": "koa-route-tree",
+  "version": "1.0.0",
+  "description": "the route for koa",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yss/koa-route-tree.git"
+  },
+  "keywords": [
+    "route",
+    "router",
+    "koa"
+  ],
+  "devDependencies": {
+    "co": "^4.6.0",
+    "eslint": "^3.2.2",
+    "eslint-plugin-jsdoc": "^2.3.1",
+    "should": "^11.1.0"
+  },
+  "author": "yss.nelson@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yss/koa-route-tree/issues"
+  },
+  "homepage": "https://github.com/yss/koa-route-tree#readme"
+}
