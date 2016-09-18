@@ -8,6 +8,61 @@ Let's see it.
 
 `npm install koa-route-tree --save`
 
+## Usage
+
+```js
+// File: app.js
+
+const Koa = require('koa');
+const Route = require('koa-route-tree');
+
+const app = Koa();
+
+const fileRouter = ['robots.txt'];
+app.use(Route(__dirname + '/controller', {
+    '/appList': '/app/list',
+    'favicon.ico': '/index/favicon.ico'
+}, function (controller) {
+    let pathname = this.path.substring(1);
+    
+    if (fileRouter.indexOf(pathname) > -1) {
+        this.body = 'Allows: *';
+        return true;
+    }
+    
+    // console.log(controller);
+});
+```
+
+```js
+// File: controllers/app/list.js
+
+/**
+ * Normal Get Request, Support urls:
+ * 1. /app/list => page: undefined | second: undefind
+ * 2. /app/list/0 => page: 0 | second: undefined
+ * 3. /app/list/1.html => page: 1 | second: undefined
+ * 4. /app/list/1/a => page: 1 | second: a
+ */
+exports.index = function *(page, second) {
+    this.body = 'Page: ' + page + ' Second: ' + second;
+};
+
+/**
+ * For POST Request. Support urls:
+ * 1. /app/list => page: undefined | second: undefind
+ * 2. /app/list/0 => page: 0 | second: undefined
+ * 3. /app/list/1.html => page: 1 | second: undefined
+ * 4. /app/list/1/a => page: 1 | second: a
+ */
+exports.postSet = function *(page, second) {
+    this.body = 'Page: ' + page + ' Second: ' + second;
+};
+exports.putSet = function *(page, second) {
+    this.body = 'Page: ' + page + ' Second: ' + second;
+};
+```
+
 ## Class
 
 `Route(controllerDirectory[, alias][, withoutRouteHandle])`
@@ -31,7 +86,7 @@ Let's see it.
 
 ### Static Attribute
 
-`route.controller` is like a tree. And the value must be a function at the end of the tree.
+`route.controller` is a freeze object like a tree. And the value must be a function at the end of the tree.
 
 ## Controller
 
@@ -86,61 +141,6 @@ Let's see it.
     };
     ```
 
-## Usage
-
-```js
-// File: app.js
-
-const Koa = require('koa');
-const Route = require('koa-route-tree');
-
-const app = Koa();
-
-const fileRouter = ['robots.txt'];
-app.use(Route(__dirname + '/controller', {
-    '/appList': '/app/list',
-    'favicon.ico': '/index/favicon.ico'
-}, function (controller) {
-    let pathname = this.path.substring(1);
-    
-    if (fileRouter.indexOf(pathname) > -1) {
-        this.body = 'Allows: *';
-        return true;
-    }
-    
-    // console.log(controller);
-});
-```
-
-```js
-// File: controller/app/list.js
-
-/**
- * Normal Get Request, Support urls:
- * 1. /app/list => page: undefined | second: undefind
- * 2. /app/list/0 => page: 0 | second: undefined
- * 3. /app/list/1.html => page: 1 | second: undefined
- * 4. /app/list/1/a => page: 1 | second: a
- */
-exports.index = function *(page, second) {
-    this.body = 'Page: ' + page + ' Second: ' + second;
-};
-
-/**
- * For POST Request. Support urls:
- * 1. /app/list => page: undefined | second: undefind
- * 2. /app/list/0 => page: 0 | second: undefined
- * 3. /app/list/1.html => page: 1 | second: undefined
- * 4. /app/list/1/a => page: 1 | second: a
- */
-exports.postSet = function *(page, second) {
-    this.body = 'Page: ' + page + ' Second: ' + second;
-};
-exports.putSet = function *(page, second) {
-    this.body = 'Page: ' + page + ' Second: ' + second;
-};
-```
-
 ## Test
 
 ```sh
@@ -151,7 +151,7 @@ npm test # npm run test
 
 ## The End
 
-Anyway, try to use. And see the example in test directory.
+Anyway, try to use. And see the example in example directory.
 
 Hope this is useful to you.
 
