@@ -74,13 +74,13 @@ const PATH_DEFAULT = 'index';
  * koa-route-tree
  * @param {String} dirname
  * @param {Object} [alias]
- * @param {Function} [withoutRouteHandle]
+ * @param {Function} [withoutRouteHandler]
  * @return {Function}
  */
-function Route(dirname, alias, withoutRouteHandle) {
+function Route(dirname, alias, withoutRouteHandler) {
     var controller = {};
     if (typeof alias === TYPE_FUNCTION) {
-        withoutRouteHandle = alias;
+        withoutRouteHandler = alias;
         alias = null;
     }
     initController(controller, dirname);
@@ -96,8 +96,11 @@ function Route(dirname, alias, withoutRouteHandle) {
             method;
 
         if (pathArr[0] && !app[pathArr[0]]) {
-            if (withoutRouteHandle && withoutRouteHandle.call(this, controller) !== true) {
-                return yield* next;
+            if (typeof withoutRouteHandler === TYPE_FUNCTION) {
+                if (withoutRouteHandler.call(this, controller) !== true) {
+                    return yield* next;
+                }
+                return;// handled by withoutRouteHandler
             } else {
                 return this.throw(404, 'ROUTE_NOT_FOUND');
             }
@@ -110,11 +113,11 @@ function Route(dirname, alias, withoutRouteHandle) {
                 continue;
             }
             if (reqMethod === METHOD_HEAD) {
-                Route.headRequestHandle(this, app, path);
+                Route.headRequestHandler(this, app, path);
                 break;
             }
             if (reqMethod === METHOD_OPTIONS) {
-                Route.optionsRequestHandle(this, app, path);
+                Route.optionsRequestHandler(this, app, path);
                 break;
             }
             method = isGet ? path : reqMethod.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
@@ -146,7 +149,7 @@ function Route(dirname, alias, withoutRouteHandle) {
  * @param {Object} app the last controller object
  * @param {String} path
  */
-Route.optionsRequestHandle = function(ctx, app, path) {
+Route.optionsRequestHandler = function(ctx, app, path) {
     var methods = [];
 
     if (typeof app[path] === TYPE_FUNCTION || typeof app.index === TYPE_FUNCTION) {
@@ -169,7 +172,7 @@ Route.optionsRequestHandle = function(ctx, app, path) {
  * @param {Object} app the last controller object
  * @param {String} method
  */
-Route.headRequestHandle = function(ctx, app, method) {
+Route.headRequestHandler = function(ctx, app, method) {
     if (typeof app[method] === TYPE_FUNCTION || typeof app.index === TYPE_FUNCTION) {
         ctx.status = 200;
     } else {

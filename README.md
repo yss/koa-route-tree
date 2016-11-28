@@ -65,7 +65,7 @@ exports.putSet = function *(page, second) {
 
 ## Class
 
-`Route(controllerDirectory[, alias][, withoutRouteHandle])`
+`Route(controllerDirectory[, alias][, withoutRouteHandler])`
 
 ### Parameters
 
@@ -78,7 +78,7 @@ exports.putSet = function *(page, second) {
         'a/b': 'your/path' // the same link, this is equivalent to /a/b <=> /your/path
     };
     ```
-* `withoutRouteHandle(controller)` is a handle function for the request without route handle.
+* `withoutRouteHandler(controller)` is a handle function for the request without route handle.
 
     It will not execute `yield* next`, if `return true` from this function.
     
