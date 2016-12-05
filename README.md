@@ -80,7 +80,11 @@ exports.putSet = function *(page, second) {
     ```
 * `withoutRouteHandler(controller)` is a handle function for the request without route handle.
 
-    It will not execute `yield* next`, if `return true` from this function.
+    It will return directly, if `return true` from this function.
+    
+    It will execute `yield* next`, if `return false` from this function.
+    
+    It will throw 404 `this.throw(404, 'ROUTE_NOT_FOUND')`, if do not return false or true from this function.
     
     And the context of the function is the current koa context.
 
@@ -105,14 +109,6 @@ exports.putSet = function *(page, second) {
     // So, you should insert a arguments in the index function, if you want to support GET /app/1
     exports.index = function *(id) {
         this.body = id || 'app';
-    };
-    ```
-* `next` will be set to the last parameters of function.
-
-    ```js
-    // File: index.js
-    exports.index = function *(id, next) {
-        this.body = id;
     };
     ```
 * Http method is a prefix of function name but `GET`.

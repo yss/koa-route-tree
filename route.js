@@ -97,13 +97,16 @@ function Route(dirname, alias, withoutRouteHandler) {
 
         if (pathArr[0] && !app[pathArr[0]]) {
             if (typeof withoutRouteHandler === TYPE_FUNCTION) {
-                if (withoutRouteHandler.call(this, controller) !== true) {
+                // use isGet for do not need add other variable
+                isGet = withoutRouteHandler.call(this, controller);
+                if (isGet === true) { // has been handled by withoutRouteHandler
+                    return;
+                } else if (isGet === false) { // need handle by next
                     return yield* next;
                 }
-                return;// handled by withoutRouteHandler
-            } else {
-                return this.throw(404, 'ROUTE_NOT_FOUND');
+                // not been handled
             }
+            return this.throw(404, 'ROUTE_NOT_FOUND');
         }
         while (true) { /*eslint no-constant-condition:0*/
             // path== "0"
@@ -126,7 +129,7 @@ function Route(dirname, alias, withoutRouteHandler) {
                 yield* app[method].apply(this, pathArr);
             } else {
                 pathArr.unshift(path.replace('.html', ''));
-                pathArr.push(next);
+                //pathArr.push(next);
                 method = isGet ? PATH_DEFAULT : reqMethod.toLowerCase() + 'Index';
                 if (typeof app[method] === TYPE_FUNCTION && app[method].length > 0) { // the index function must contains more than 1 arguments
                     yield* app[method].apply(this, pathArr);

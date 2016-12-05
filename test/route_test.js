@@ -16,7 +16,7 @@ function simulator(obj, callback) {
             path: '/',
             method: 'GET'
         }, obj.ctx || {});
-        let route = Route(controllerDirname, obj.alias, obj.withoutRouteHandle);
+        let route = Route(controllerDirname, obj.alias, obj.withoutRouteHandler);
         yield* route.call(ctx, (obj.next || function *(){})());
         if (callback) {
             callback(ctx);
@@ -169,13 +169,33 @@ describe('Koa-route-tree', function () {
         });
     });
 
-    describe('WithoutRouteHandle', function () {
-        it('should be invoke withoutRouteHandle and go next when GET /xx', function (done) {
+    describe('WithoutRouteHandler', function () {
+        it('should be invoke withoutRouteHandler and go next when GET /xx', function (done) {
             simulator({
                 ctx: {
                     path: '/xx'
                 },
-                withoutRouteHandle: function (controller) {
+                withoutRouteHandler: function (controller) {
+                    controller.should.be.an.Object();
+                    return false;
+                },
+                next: function *() {
+                    done();
+                }
+            });
+        });
+
+        it('should be invoke withoutRouteHandler and throw 404 if withoutRouteHandler do not return false or true when GET /xx', function (done) {
+            simulator({
+                ctx: {
+                    path: '/xx',
+                    'throw': function (status, text) {
+                        status.should.be.equal(404);
+                        text.should.be.equal('ROUTE_NOT_FOUND');
+                        done();
+                    }
+                },
+                withoutRouteHandler: function (controller) {
                     controller.should.be.an.Object();
                 },
                 next: function *() {
@@ -184,13 +204,13 @@ describe('Koa-route-tree', function () {
             });
         });
 
-        it('should be not invoke the next function when call withoutRouteHandle return true and GET /xx', function (done) {
+        it('should be not invoke the next function when call withoutRouteHandler return true and GET /xx', function (done) {
             let timeout;
             simulator({
                 ctx: {
                     path: '/xx'
                 },
-                withoutRouteHandle: function (controller) {
+                withoutRouteHandler: function (controller) {
                     controller.should.be.an.Object();
                     timeout = setTimeout(function () {
                         done();
