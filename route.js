@@ -125,11 +125,9 @@ function Route(dirname, alias, withoutRouteHandler) {
             }
             method = isGet ? path : reqMethod.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
             if (typeof app[method] === TYPE_FUNCTION) {
-                pathArr.push(next);
                 yield* app[method].apply(this, pathArr);
             } else {
                 pathArr.unshift(path.replace('.html', ''));
-                //pathArr.push(next);
                 method = isGet ? PATH_DEFAULT : reqMethod.toLowerCase() + 'Index';
                 if (typeof app[method] === TYPE_FUNCTION && app[method].length > 0) { // the index function must contains more than 1 arguments
                     yield* app[method].apply(this, pathArr);
