@@ -175,51 +175,12 @@ describe('Koa-route-tree', function () {
                 ctx: {
                     path: '/xx'
                 },
-                withoutRouteHandler: function (controller) {
+                withoutRouteHandler: function *(next, controller) {
                     controller.should.be.an.Object();
-                    return false;
+                    yield next;
                 },
                 next: function *() {
                     done();
-                }
-            });
-        });
-
-        it('should be invoke withoutRouteHandler and throw 404 if withoutRouteHandler do not return false or true when GET /xx', function (done) {
-            simulator({
-                ctx: {
-                    path: '/xx',
-                    'throw': function (status, text) {
-                        status.should.be.equal(404);
-                        text.should.be.equal('ROUTE_NOT_FOUND');
-                        done();
-                    }
-                },
-                withoutRouteHandler: function (controller) {
-                    controller.should.be.an.Object();
-                },
-                next: function *() {
-                    done();
-                }
-            });
-        });
-
-        it('should be not invoke the next function when call withoutRouteHandler return true and GET /xx', function (done) {
-            let timeout;
-            simulator({
-                ctx: {
-                    path: '/xx'
-                },
-                withoutRouteHandler: function (controller) {
-                    controller.should.be.an.Object();
-                    timeout = setTimeout(function () {
-                        done();
-                    }, 99);
-                    return true;
-                },
-                next: function *() {
-                    clearTimeout(timeout);
-                    throw new Error('can not be execute');
                 }
             });
         });

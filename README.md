@@ -22,15 +22,16 @@ const fileRouter = ['robots.txt'];
 app.use(Route(__dirname + '/controller', {
     '/appList': '/app/list',
     'favicon.ico': '/index/favicon.ico'
-}, function (controller) {
+}, function (next, controller) {
     let pathname = this.path.substring(1);
     
     if (fileRouter.indexOf(pathname) > -1) {
         this.body = 'Allows: *';
-        return true;
     }
     
     // console.log(controller);
+    // and do next if you want
+    // yield * next;
 });
 ```
 
@@ -78,15 +79,9 @@ exports.putSet = function *(page, second) {
         'a/b': 'your/path' // the same link, this is equivalent to /a/b <=> /your/path
     };
     ```
-* `withoutRouteHandler(controller)` is a handle function for the request without route handle.
+* `withoutRouteHandler(next, controller)` is a middleware function for handle the request without route.
 
-    It will return directly, if `return true` from this function.
-    
-    It will execute `yield* next`, if `return false` from this function.
-    
-    It will throw 404 `this.throw(404, 'ROUTE_NOT_FOUND')`, if do not return false or true from this function.
-    
-    And the context of the function is the current koa context.
+    So the context of the function is the current koa context.
 
 ### Static Attribute
 

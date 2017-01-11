@@ -97,14 +97,7 @@ function Route(dirname, alias, withoutRouteHandler) {
 
         if (pathArr[0] && !app[pathArr[0]]) {
             if (typeof withoutRouteHandler === TYPE_FUNCTION) {
-                // use isGet for do not need add other variable
-                isGet = withoutRouteHandler.call(this, controller);
-                if (isGet === true) { // has been handled by withoutRouteHandler
-                    return;
-                } else if (isGet === false) { // need handle by next
-                    return yield* next;
-                }
-                // not been handled
+                return yield withoutRouteHandler.call(this, next, controller);
             }
             return this.throw(404, 'ROUTE_NOT_FOUND');
         }
