@@ -91,7 +91,7 @@ function Route(dirname, alias, withoutRouteHandler) {
         var pathArr = ctx.path.substring(1).split('/'),
             app = controller,
             reqMethod = ctx.method,
-            isGet = reqMethod === METHOD_GET || reqMethod === METHOD_HEAD,
+            isGet = reqMethod === METHOD_GET,
             path,
             method;
 
@@ -102,7 +102,6 @@ function Route(dirname, alias, withoutRouteHandler) {
             return ctx.throw(404, 'ROUTE_NOT_FOUND');
         }
         while (true) { /*eslint no-constant-condition:0*/
-            // path== "0"
             path = pathArr.shift() || PATH_DEFAULT;
             if (typeof app[path] === TYPE_OBJECT) {
                 app = app[path];

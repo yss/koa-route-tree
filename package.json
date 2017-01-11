@@ -1,6 +1,6 @@
 {
   "name": "koa-route-tree",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "The most powerful route middleware for koa",
   "main": "route.js",
   "scripts": {
@@ -11,10 +11,11 @@
     "url": "git+https://github.com/yss/koa-route-tree.git"
   },
   "keywords": [
+    "koa",
+    "koa2+",
     "route",
     "routes",
     "router",
-    "koa",
     "middleware"
   ],
   "devDependencies": {
