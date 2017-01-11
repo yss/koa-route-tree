@@ -14,10 +14,11 @@ function simulator(obj, callback) {
         obj = obj || {};
         let ctx = Object.assign({
             path: '/',
-            method: 'GET'
+            method: 'GET',
+            set (){} // for options request
         }, obj.ctx || {});
         let route = Route(controllerDirname, obj.alias, obj.withoutRouteHandler);
-        yield* route.call(ctx, (obj.next || function *(){})());
+        yield* route(ctx, (obj.next || function *(){})());
         if (callback) {
             callback(ctx);
         }
@@ -170,12 +171,12 @@ describe('Koa-route-tree', function () {
     });
 
     describe('WithoutRouteHandler', function () {
-        it('should be invoke withoutRouteHandler and go next when GET /xx', function (done) {
+        it('should be invoke withoutRouteHandler', function (done) {
             simulator({
                 ctx: {
                     path: '/xx'
                 },
-                withoutRouteHandler: function *(next, controller) {
+                withoutRouteHandler: function *(ctx, next, controller) {
                     controller.should.be.an.Object();
                     yield next;
                 },

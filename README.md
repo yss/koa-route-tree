@@ -8,6 +8,12 @@ Let's see it.
 
 `npm install koa-route-tree --save`
 
+## Caution!
+
+This is only support for koa@2+!
+
+If you use koa@1, install it with version 1.4.0. `npm install koa-route-tree@1.4.0 --save`
+
 ## Usage
 
 ```js
@@ -22,11 +28,11 @@ const fileRouter = ['robots.txt'];
 app.use(Route(__dirname + '/controller', {
     '/appList': '/app/list',
     'favicon.ico': '/index/favicon.ico'
-}, function (next, controller) {
-    let pathname = this.path.substring(1);
+}, function *(ctx, next, controller) {
+    let pathname = ctx.path.substring(1);
     
     if (fileRouter.indexOf(pathname) > -1) {
-        this.body = 'Allows: *';
+        ctx.body = 'Allows: *';
     }
     
     // console.log(controller);
@@ -79,7 +85,7 @@ exports.putSet = function *(page, second) {
         'a/b': 'your/path' // the same link, this is equivalent to /a/b <=> /your/path
     };
     ```
-* `withoutRouteHandler(next, controller)` is a middleware function for handle the request without route.
+* `withoutRouteHandler *(ctx, next, controller)` is a middleware function for handle the request without route.
 
     So the context of the function is the current koa context.
 

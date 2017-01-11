@@ -87,19 +87,19 @@ function Route(dirname, alias, withoutRouteHandler) {
     addAlias(alias, controller);
     // prevent the controller object to be modified.
     Object.freeze(controller);
-    var middleware = function *(next) {
-        var pathArr = this.path.substring(1).split('/'),
+    function *router(ctx, next) {
+        var pathArr = ctx.path.substring(1).split('/'),
             app = controller,
-            reqMethod = this.method,
-            isGet = reqMethod === METHOD_GET,
+            reqMethod = ctx.method,
+            isGet = reqMethod === METHOD_GET || reqMethod === METHOD_HEAD,
             path,
             method;
 
         if (pathArr[0] && !app[pathArr[0]]) {
             if (typeof withoutRouteHandler === TYPE_FUNCTION) {
-                return yield withoutRouteHandler.call(this, next, controller);
+                return yield* withoutRouteHandler(ctx, next, controller);
             }
-            return this.throw(404, 'ROUTE_NOT_FOUND');
+            return ctx.throw(404, 'ROUTE_NOT_FOUND');
         }
         while (true) { /*eslint no-constant-condition:0*/
             // path== "0"
@@ -109,32 +109,32 @@ function Route(dirname, alias, withoutRouteHandler) {
                 continue;
             }
             if (reqMethod === METHOD_HEAD) {
-                Route.headRequestHandler(this, app, path);
+                Route.headRequestHandler(ctx, app, path);
                 break;
             }
             if (reqMethod === METHOD_OPTIONS) {
-                Route.optionsRequestHandler(this, app, path);
+                Route.optionsRequestHandler(ctx, app, path);
                 break;
             }
             method = isGet ? path : reqMethod.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
             if (typeof app[method] === TYPE_FUNCTION) {
-                yield* app[method].apply(this, pathArr);
+                yield* app[method].apply(ctx, pathArr);
             } else {
                 pathArr.unshift(path.replace('.html', ''));
                 method = isGet ? PATH_DEFAULT : reqMethod.toLowerCase() + 'Index';
                 if (typeof app[method] === TYPE_FUNCTION && app[method].length > 0) { // the index function must contains more than 1 arguments
-                    yield* app[method].apply(this, pathArr);
+                    yield* app[method].apply(ctx, pathArr);
                 } else {
-                    this.throw(404, 'ROUTE_NOT_FOUND');
+                    ctx.throw(404, 'ROUTE_NOT_FOUND');
                 }
             }
             break;
         }
-    };
+    }
 
-    middleware.controller = controller;
+    router.controller = controller;
 
-    return middleware;
+    return router;
 }
 
 /**
@@ -157,6 +157,7 @@ Route.optionsRequestHandler = function(ctx, app, path) {
         }
     });
 
+    ctx.set('Allow', methods.join(','));
     ctx.body = methods.join(',');
 };
 
