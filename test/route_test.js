@@ -178,9 +178,9 @@ describe('Koa-route-tree', function () {
                 },
                 withoutRouteHandler: function *(ctx, next, controller) {
                     controller.should.be.an.Object();
-                    yield next;
+                    yield next();
                 },
-                next: function *() {
+                next: function () {
                     done();
                 }
             });

@@ -20,12 +20,13 @@ If you use koa@1, install it with version 1.4.0. `npm install koa-route-tree@1.4
 // File: app.js
 
 const Koa = require('koa');
+const Co = require('co');
 const Route = require('koa-route-tree');
 
-const app = Koa();
+const app = new Koa();
 
 const fileRouter = ['robots.txt'];
-app.use(Route(__dirname + '/controller', {
+app.use(Co.wrap(Route(__dirname + '/controller', {
     '/appList': '/app/list',
     'favicon.ico': '/index/favicon.ico'
 }, function *(ctx, next, controller) {
@@ -37,8 +38,8 @@ app.use(Route(__dirname + '/controller', {
     
     // console.log(controller);
     // and do next if you want
-    // yield * next;
-});
+    // yield next();
+}));
 ```
 
 ```js
