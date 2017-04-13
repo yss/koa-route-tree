@@ -3,6 +3,6 @@
  */
 'use strict';
 
-exports.index = function *() {
+exports.index = function () {
     this.body = 'app';
 };

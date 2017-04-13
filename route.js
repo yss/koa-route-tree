@@ -87,7 +87,7 @@ function Route(dirname, alias, withoutRouteHandler) {
     addAlias(alias, controller);
     // prevent the controller object to be modified.
     Object.freeze(controller);
-    function *router(ctx, next) {
+    async function router(ctx, next) {
         var pathArr = ctx.path.substring(1).split('/'),
             app = controller,
             reqMethod = ctx.method,
@@ -97,7 +97,7 @@ function Route(dirname, alias, withoutRouteHandler) {
 
         if (pathArr[0] && !app[pathArr[0]]) {
             if (typeof withoutRouteHandler === TYPE_FUNCTION) {
-                return yield* withoutRouteHandler(ctx, next, controller);
+                return await withoutRouteHandler(ctx, next, controller);
             }
             return ctx.throw(404, 'ROUTE_NOT_FOUND');
         }
@@ -117,12 +117,12 @@ function Route(dirname, alias, withoutRouteHandler) {
             }
             method = isGet ? path : reqMethod.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
             if (typeof app[method] === TYPE_FUNCTION) {
-                yield* app[method].apply(ctx, pathArr);
+                await app[method].apply(ctx, pathArr);
             } else {
                 pathArr.unshift(path.replace('.html', ''));
                 method = isGet ? PATH_DEFAULT : reqMethod.toLowerCase() + 'Index';
                 if (typeof app[method] === TYPE_FUNCTION && app[method].length > 0) { // the index function must contains more than 1 arguments
-                    yield* app[method].apply(ctx, pathArr);
+                    await app[method].apply(ctx, pathArr);
                 } else {
                     ctx.throw(404, 'ROUTE_NOT_FOUND');
                 }

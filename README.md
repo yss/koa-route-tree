@@ -26,19 +26,20 @@ const Route = require('koa-route-tree');
 const app = new Koa();
 
 const fileRouter = ['robots.txt'];
-app.use(Co.wrap(Route(__dirname + '/controller', {
+app.use(Route(__dirname + '/controller', {
     '/appList': '/app/list',
     'favicon.ico': '/index/favicon.ico'
-}, function *(ctx, next, controller) {
+}, async function (ctx, next, controller) {
     let pathname = ctx.path.substring(1);
     
     if (fileRouter.indexOf(pathname) > -1) {
         ctx.body = 'Allows: *';
+        return;
     }
     
     // console.log(controller);
     // and do next if you want
-    // yield next();
+    // await next();
 }));
 ```
 
@@ -52,7 +53,7 @@ app.use(Co.wrap(Route(__dirname + '/controller', {
  * 3. /app/list/1.html => page: 1 | second: undefined
  * 4. /app/list/1/a => page: 1 | second: a
  */
-exports.index = function *(page, second) {
+exports.index = function (page, second) {
     this.body = 'Page: ' + page + ' Second: ' + second;
 };
 
@@ -63,10 +64,10 @@ exports.index = function *(page, second) {
  * 3. /app/list/1.html => page: 1 | second: undefined
  * 4. /app/list/1/a => page: 1 | second: a
  */
-exports.postSet = function *(page, second) {
+exports.postSet = function (page, second) {
     this.body = 'Page: ' + page + ' Second: ' + second;
 };
-exports.putSet = function *(page, second) {
+exports.putSet = function (page, second) {
     this.body = 'Page: ' + page + ' Second: ' + second;
 };
 ```
@@ -102,14 +103,14 @@ exports.putSet = function *(page, second) {
     // File: app.js
     
     // GET /app
-    exports.index = function *() {
+    exports.index = function () {
         this.body = 'app';
     };
     // And need be more careful to use the route below.
     // There will not be invoked when GET /app/1.
     // The index function must have more than one arguments when there is no such name function of path
     // So, you should insert a arguments in the index function, if you want to support GET /app/1
-    exports.index = function *(id) {
+    exports.index = function (id) {
         this.body = id || 'app';
     };
     ```
@@ -119,22 +120,22 @@ exports.putSet = function *(page, second) {
     // File: index.js
     
     // GET /
-    exports.index = function *(id) {
+    exports.index = function (id) {
         this.body = id;
     };
     
     // POST /
-    exports.postIndex = function *(id) {
+    exports.postIndex = function (id) {
         this.body = id;
     };
     
     // PUT /
-    exports.putIndex = function *(id) {
+    exports.putIndex = function (id) {
         this.body = id;
     };
     
     // DELETE /
-    exports.deleteIndex = function *(id) {
+    exports.deleteIndex = function (id) {
         this.body = id;
     };
     ```

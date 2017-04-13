@@ -9,7 +9,7 @@
  * 3. /app/list/1.html => page: 1 | second: undefined
  * 4. /app/list/1/a => page: 1 | second: a
  */
-exports.index = function *(page, second) {
+exports.index = function (page, second) {
     this.body = 'Page: ' + page + ' Second: ' + second;
 };
 
@@ -20,9 +20,9 @@ exports.index = function *(page, second) {
  * 3. /app/list/1.html => page: 1 | second: undefined
  * 4. /app/list/1/a => page: 1 | second: a
  */
-exports.postSet = function *(page, second) {
+exports.postSet = function (page, second) {
     this.body = 'Page: ' + page + ' Second: ' + second;
 };
-exports.putSet = function *(page, second) {
+exports.putSet = function (page, second) {
     this.body = 'Page: ' + page + ' Second: ' + second;
 };

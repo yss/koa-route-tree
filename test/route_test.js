@@ -5,24 +5,21 @@
 const Path = require('path');
 //const Request = require('supertest');
 //const Koa = require('koa');
-const CO = require('co');
 const controllerDirname = Path.join(__dirname, '../example/controllers/');
 
-function simulator(obj, callback) {
-    CO(function *() {
-        const Route = require('../route.js');
-        obj = obj || {};
-        let ctx = Object.assign({
-            path: '/',
-            method: 'GET',
-            set (){} // for options request
-        }, obj.ctx || {});
-        let route = Route(controllerDirname, obj.alias, obj.withoutRouteHandler);
-        yield* route(ctx, (obj.next || function *(){})());
-        if (callback) {
-            callback(ctx);
-        }
-    });
+async function simulator(obj, callback) {
+    const Route = require('../route.js');
+    obj = obj || {};
+    let ctx = Object.assign({
+        path: '/',
+        method: 'GET',
+        set (){} // for options request
+    }, obj.ctx || {});
+    let route = Route(controllerDirname, obj.alias, obj.withoutRouteHandler);
+    await route(ctx, obj.next || async function (){});
+    if (callback) {
+        callback(ctx);
+    }
 }
 
 describe('Koa-route-tree', function () {
@@ -176,9 +173,9 @@ describe('Koa-route-tree', function () {
                 ctx: {
                     path: '/xx'
                 },
-                withoutRouteHandler: function *(ctx, next, controller) {
+                withoutRouteHandler: async function (ctx, next, controller) {
                     controller.should.be.an.Object();
-                    yield next();
+                    await next();
                 },
                 next: function () {
                     done();

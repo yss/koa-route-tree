@@ -3,14 +3,14 @@
  */
 'use strict';
 
-exports.index = function *() {
+exports.index = function () {
     this.body = 'Hello, this is index page.';
 };
 
-exports.putIndex = function *(id) {
+exports.putIndex = function (id) {
     this.body = id;
 };
 
-exports.deleteIndex = function *(id) {
+exports.deleteIndex = function (id) {
     this.body = id;
 };
