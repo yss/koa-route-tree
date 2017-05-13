@@ -70,6 +70,21 @@ const METHOD_HEAD = 'HEAD';
 const METHOD_OPTIONS = 'OPTIONS';
 const PATH_DEFAULT = 'index';
 
+function getActionName (app, reqMethod, path, pathArr) {
+    let actionName = METHOD_GET === reqMethod ? path : reqMethod.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
+    if (typeof app[actionName] !== TYPE_FUNCTION) {
+        if (!Array.isArray(pathArr) || pathArr.length === 0) {
+            return;
+        }
+
+        if ((actionName = getActionName(app, reqMethod, pathArr[0]))) {
+            pathArr.splice(0, 1, path);
+        }
+    }
+
+    return actionName;
+}
+
 /**
  * koa-route-tree
  * @param {String} dirname
@@ -91,7 +106,6 @@ function Route(dirname, alias, withoutRouteHandler) {
         var pathArr = ctx.path.substring(1).split('/'),
             app = controller,
             reqMethod = ctx.method,
-            isGet = reqMethod === METHOD_GET,
             path,
             method;
 
@@ -101,31 +115,32 @@ function Route(dirname, alias, withoutRouteHandler) {
             }
             return ctx.throw(404, 'ROUTE_NOT_FOUND');
         }
+
         while (true) { /*eslint no-constant-condition:0*/
             path = pathArr.shift() || PATH_DEFAULT;
             if (typeof app[path] === TYPE_OBJECT) {
                 app = app[path];
                 continue;
             }
+
             if (reqMethod === METHOD_HEAD) {
-                Route.headRequestHandler(ctx, app, path);
+                Route.headRequestHandler(ctx, app, path, pathArr[0]);
                 break;
             }
             if (reqMethod === METHOD_OPTIONS) {
-                Route.optionsRequestHandler(ctx, app, path);
+                Route.optionsRequestHandler(ctx, app, path, pathArr[0]);
                 break;
             }
-            method = isGet ? path : reqMethod.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
-            if (typeof app[method] === TYPE_FUNCTION) {
+
+            if ((method = getActionName(app, reqMethod, path, pathArr))) {
+                await app[method].apply(ctx, pathArr);
+            } else if (PATH_DEFAULT !== path
+                        && (method = getActionName(app, reqMethod, PATH_DEFAULT))
+                        && app[method].length > 0) { // the index function must contains more than 1 arguments
+                pathArr.unshift(path.replace('.html', ''));
                 await app[method].apply(ctx, pathArr);
             } else {
-                pathArr.unshift(path.replace('.html', ''));
-                method = isGet ? PATH_DEFAULT : reqMethod.toLowerCase() + 'Index';
-                if (typeof app[method] === TYPE_FUNCTION && app[method].length > 0) { // the index function must contains more than 1 arguments
-                    await app[method].apply(ctx, pathArr);
-                } else {
-                    ctx.throw(404, 'ROUTE_NOT_FOUND');
-                }
+                ctx.throw(404, 'ROUTE_NOT_FOUND');
             }
             break;
         }
@@ -141,19 +156,24 @@ function Route(dirname, alias, withoutRouteHandler) {
  * @param ctx
  * @param {Object} app the last controller object
  * @param {String} path
+ * @param {String} pathExtra
  */
-Route.optionsRequestHandler = function(ctx, app, path) {
+Route.optionsRequestHandler = function(ctx, app, path, pathExtra) {
     var methods = [];
 
-    if (typeof app[path] === TYPE_FUNCTION || typeof app.index === TYPE_FUNCTION) {
+    if (typeof app[path] === TYPE_FUNCTION || typeof app[pathExtra] === TYPE_FUNCTION || typeof app.index === TYPE_FUNCTION) {
         methods.push(METHOD_HEAD, METHOD_GET);
     }
 
     METHODS.forEach(function(method) {
-        if (typeof app[method + path.substring(0, 1).toUpperCase() + path.substring(1)] === TYPE_FUNCTION
-            || typeof app[method + 'Index'] === TYPE_FUNCTION) {
-            methods.push(method.toUpperCase());
-        }
+        [path, pathExtra].some(function (path) {
+            if (path
+                && (typeof app[method + path.substring(0, 1).toUpperCase() + path.substring(1)] === TYPE_FUNCTION
+                    || typeof app[method + 'Index'] === TYPE_FUNCTION)) {
+                methods.push(method.toUpperCase());
+                return true;
+            }
+        });
     });
 
     ctx.set('Allow', methods.join(','));
@@ -164,10 +184,13 @@ Route.optionsRequestHandler = function(ctx, app, path) {
  * for HEAD /
  * @param ctx
  * @param {Object} app the last controller object
- * @param {String} method
+ * @param {String} path
+ * @param {String} pathExtra
  */
-Route.headRequestHandler = function(ctx, app, method) {
-    if (typeof app[method] === TYPE_FUNCTION || typeof app.index === TYPE_FUNCTION) {
+Route.headRequestHandler = function(ctx, app, path, pathExtra) {
+    if (typeof app[path] === TYPE_FUNCTION
+            || (pathExtra && typeof app[pathExtra] === TYPE_FUNCTION)
+            || typeof app.index === TYPE_FUNCTION) {
         ctx.status = 200;
     } else {
         ctx.status = 404;

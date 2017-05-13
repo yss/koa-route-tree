@@ -1,7 +1,7 @@
 {
   "name": "koa-route-tree",
-  "version": "2.3.0",
-  "description": "The most powerful route middleware for koa",
+  "version": "2.4.0",
+  "description": "The most powerful route middleware for koa1, koa2, for build your route quickly with a little configuration",
   "main": "route.js",
   "scripts": {
     "test": "mocha"
@@ -16,7 +16,8 @@
     "route",
     "routes",
     "router",
-    "middleware"
+    "middleware",
+    "restful"
   ],
   "devDependencies": {
     "mocha": "^3.2.0",

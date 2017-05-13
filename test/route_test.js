@@ -23,6 +23,57 @@ async function simulator(obj, callback) {
 }
 
 describe('Koa-route-tree', function () {
+
+    describe('Restful Route', function () {
+        it('should be return correct value when GET /app/list/1/set/a', function (done) {
+            simulator({
+                ctx: {
+                    path: '/app/list/1/set/a'
+                }
+            }, function (ctx) {
+                ctx.body.should.be.equal('GET Page/1/Second/a');
+                done();
+            });
+        });
+        it('should be return correct value when POST /app/list/1/set/a', function (done) {
+            simulator({
+                ctx: {
+                    path: '/app/list/1/set/a',
+                    method: 'POST'
+                }
+            }, function (ctx) {
+                ctx.body.should.be.equal('POST Page/1/Second/a');
+                done();
+            });
+        });
+        it('should be return correct value when PUT /app/list/1/set/a', function (done) {
+            simulator({
+                ctx: {
+                    path: '/app/list/1/set/a',
+                    method: 'PUT'
+                }
+            }, function (ctx) {
+                ctx.body.should.be.equal('PUT Page/1/Second/a');
+                done();
+            });
+        });
+
+        it('should be throw 404 when DELETE /app/list/1/set/a', function (done) {
+            simulator({
+                ctx: {
+                    path: '/app/list/1/set/a',
+                    method: 'DELETE',
+                    'throw': function (status, text) {
+                        status.should.be.equal(404);
+                        text.should.be.equal('ROUTE_NOT_FOUND');
+                        done();
+                    }
+                }
+            })
+        });
+    });
+
+
     describe('Alias feature', function () {
         it('should be the same with GET /app/list/1/a when GET /test/1/a', function (done) {
             simulator({
@@ -33,7 +84,7 @@ describe('Koa-route-tree', function () {
                     test: '/app/list'
                 }
             }, function (ctx) {
-                ctx.body.should.be.equal('Page: 1 Second: a');
+                ctx.body.should.be.equal('Page/1/Second/a');
                 done();
             });
         });
@@ -46,7 +97,7 @@ describe('Koa-route-tree', function () {
                     'a/b': 'app/list'
                 }
             }, function (ctx) {
-                ctx.body.should.be.equal('Page: 1 Second: a');
+                ctx.body.should.be.equal('Page/1/Second/a');
                 done();
             });
         });
@@ -92,13 +143,14 @@ describe('Koa-route-tree', function () {
             });
         });
 
-        it('should be return with HEAD,GET,PUT,DELETE when OPTIONS /', function (done) {
+        it('should be return with HEAD,GET,POST,PUT when OPTIONS /app/list/1/set', function (done) {
             simulator({
                 ctx: {
+                    path: '/app/list/1/set',
                     method: 'OPTIONS'
                 }
             }, function (ctx) {
-                ctx.body.should.be.equal('HEAD,GET,PUT,DELETE');
+                ctx.body.should.be.equal('HEAD,GET,POST,PUT');
                 done();
             });
         });
