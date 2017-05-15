@@ -13,6 +13,10 @@ exports.index = function (page, second) {
     this.body = 'Page/' + page + '/Second/' + second;
 };
 
+exports.putIndex = function (page, second) {
+    this.body = 'PUT Page/' + page + '/Second/' + second;
+};
+
 /**
  * For GET Request. Support urls:
  * 1. GET /app/list/set => page: undefined | second: undefind

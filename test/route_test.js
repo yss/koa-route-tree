@@ -57,6 +57,17 @@ describe('Koa-route-tree', function () {
                 done();
             });
         });
+        it('should be return correct value when PUT /app/list/1/a', function (done) {
+            simulator({
+                ctx: {
+                    path: '/app/list/1/a',
+                    method: 'PUT'
+                }
+            }, function (ctx) {
+                ctx.body.should.be.equal('PUT Page/1/Second/a');
+                done();
+            });
+        });
 
         it('should be throw 404 when DELETE /app/list/1/set/a', function (done) {
             simulator({
@@ -138,7 +149,7 @@ describe('Koa-route-tree', function () {
                     path: '/app/list'
                 }
             }, function (ctx) {
-                ctx.body.should.be.equal('HEAD,GET');
+                ctx.body.should.be.equal('HEAD,GET,PUT');
                 done();
             });
         });
