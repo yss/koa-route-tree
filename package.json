@@ -1,6 +1,6 @@
 {
   "name": "koa-route-tree",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "description": "The most powerful route middleware for koa1, koa2, for build your route quickly with a little configuration",
   "main": "route.js",
   "scripts": {

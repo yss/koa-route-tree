@@ -215,21 +215,6 @@ describe('Koa-route-tree', function () {
         });
     });
 
-    describe('Path as parameters', function () {
-        it('should be throw a `ROUTE_NOT_FOUND` text with status 404 when GET /index/xx', function (done) {
-            simulator({
-                ctx: {
-                    path: '/index/xx',
-                    'throw': function (status, text) {
-                        status.should.be.equal(404);
-                        text.should.be.equal('ROUTE_NOT_FOUND');
-                        done();
-                    }
-                }
-            });
-        });
-    });
-
     describe('WithoutRouteHandler', function () {
         it('should be invoke withoutRouteHandler', function (done) {
             simulator({

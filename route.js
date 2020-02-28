@@ -14,14 +14,14 @@ function isDirectory(filepath) {
 
 function initController(controller, dirname) {
     FS.readdirSync(dirname).forEach(function(item) {
-        let filepath = Path.join(dirname, item);
+        const filepath = Path.join(dirname, item);
         if (isDirectory(filepath)) {
             if (!controller[item]) {
                 controller[item] = {};
             }
             initController(controller[item], filepath);
         } else if (/\.js$/.test(item) && item.indexOf('.') !== 0) { // js file and not hidden file
-            let pathname = item.slice(0, -3);
+            const pathname = item.slice(0, -3);
             controller[pathname] = Object.assign(controller[pathname] || {}, require(filepath));
         }
     });
@@ -43,8 +43,8 @@ function addAlias(alias, controller) {
             throw new Error('Alias value must be a function or object.');
         }
 
-        let aliasController = controller,
-            keyArr = key.split('/');
+        let aliasController = controller;
+        const keyArr = key.split('/');
 
         key = keyArr.pop();
 
@@ -93,7 +93,7 @@ function getActionName (app, reqMethod, path, pathArr) {
  * @return {Function}
  */
 function Route(dirname, alias, withoutRouteHandler) {
-    var controller = {};
+    const controller = {};
     if (typeof alias === TYPE_FUNCTION) {
         withoutRouteHandler = alias;
         alias = null;
@@ -103,9 +103,10 @@ function Route(dirname, alias, withoutRouteHandler) {
     // prevent the controller object to be modified.
     Object.freeze(controller);
     async function router(ctx, next) {
-        var pathArr = ctx.path.substring(1).split('/'),
-            app = controller,
-            reqMethod = ctx.method,
+        const pathArr = ctx.path.substring(1).split('/');
+        const reqMethod = ctx.method;
+        
+        let app = controller,
             path,
             method;
 
@@ -134,10 +135,11 @@ function Route(dirname, alias, withoutRouteHandler) {
 
             if ((method = getActionName(app, reqMethod, path, pathArr))) {
                 await app[method].apply(ctx, pathArr);
-            } else if (PATH_DEFAULT !== path
-                        && (method = getActionName(app, reqMethod, PATH_DEFAULT))
-                        && app[method].length > 0) { // the index function must contains more than 1 arguments
-                pathArr.unshift(path.replace('.html', ''));
+            } else if (
+                PATH_DEFAULT !== path &&
+                (method = getActionName(app, reqMethod, PATH_DEFAULT))
+            ) {
+                pathArr.unshift(path);
                 await app[method].apply(ctx, pathArr);
             } else {
                 ctx.throw(404, 'ROUTE_NOT_FOUND');
@@ -159,7 +161,7 @@ function Route(dirname, alias, withoutRouteHandler) {
  * @param {String} pathExtra
  */
 Route.optionsRequestHandler = function(ctx, app, path, pathExtra) {
-    var methods = [];
+    const methods = [];
 
     if (typeof app[path] === TYPE_FUNCTION || typeof app[pathExtra] === TYPE_FUNCTION || typeof app.index === TYPE_FUNCTION) {
         methods.push(METHOD_HEAD, METHOD_GET);

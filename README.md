@@ -51,7 +51,6 @@ app.use(Route(__dirname + '/controller', {
  * Normal Get Request, Support urls:
  * 1. /app/list => page: undefined | second: undefind
  * 2. /app/list/0 => page: 0 | second: undefined
- * 3. /app/list/1.html => page: 1 | second: undefined
  * 4. /app/list/1/a => page: 1 | second: a
  */
 exports.index = function (page, second) {
@@ -118,10 +117,6 @@ exports.putSet = function (page, second) {
     exports.index = function () {
         this.body = 'app';
     };
-    // And need be more careful to use the route below.
-    // There will not be invoked when GET /app/1.
-    // The index function must have more than one arguments when there is no such name function of path
-    // So, you should insert a arguments in the index function, if you want to support GET /app/1
     exports.index = function (id) {
         this.body = id || 'app';
     };
